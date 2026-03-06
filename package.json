@@ -1,20 +1,37 @@
 {
   "name": "devcamper_api",
   "version": "1.0.0",
-  "description": "Devcamper backend API",
-  "license": "ISC",
-  "author": "Edgar",
-  "licence": "MIT",
-  "type": "commonjs",
-  "main": "server.js",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/edr9719/DevCamper_API-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/edr9719/DevCamper_API-/issues"
+  },
+  "homepage": "https://github.com/edr9719/DevCamper_API-#readme",
   "dependencies": {
     "dotenv": "^17.3.1",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "mongoose": "^9.2.4",
+    "morgan": "^1.10.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.13"
+    "@types/express": "^5.0.6",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^25.3.4",
+    "nodemon": "^3.1.14",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   }
 }
