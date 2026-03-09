@@ -4,3 +4,4 @@ config.env
 mongo.md
 dist
 .DS_Store
+devcamper_project_resources
