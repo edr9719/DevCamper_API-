@@ -5,7 +5,6 @@ import {
   deleteBootcamp,
   editBootcamp,
   getSingleBootcamp,
-  patchBootcamp,
 } from '../controllers/bootcampsControllers';
 
 const router: Router = express.Router();
@@ -16,7 +15,6 @@ router
   .route('/:id')
   .delete(deleteBootcamp)
   .get(getSingleBootcamp)
-  .put(editBootcamp)
-  .patch(patchBootcamp);
+  .put(editBootcamp);
 
 export default router;
