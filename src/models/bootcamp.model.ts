@@ -1,4 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
+import slugify from 'slugify';
+import { geocoder } from '../utils/geoCoder';
 
 //TypeScript interface
 export interface IBootcamp extends Document {
@@ -8,7 +10,7 @@ export interface IBootcamp extends Document {
   website: string;
   phone: string;
   email: string;
-  address: string;
+  address?: string;
   location: {
     type: string;
     coordinates: number[];
@@ -134,6 +136,29 @@ const BootcampSchema = new Schema<IBootcamp>({
     ref: 'User',
     required: false,
   },
+});
+
+//Create bootcamp slug from the name
+BootcampSchema.pre('save', async function (this: IBootcamp) {
+  this.slug = slugify(this.name, { lower: true });
+});
+
+//Geocode & create location field
+BootcampSchema.pre('save', async function (this: IBootcamp) {
+  const loc = await geocoder.geocode(this.address!);
+  this.location = {
+    type: 'Point',
+    coordinates: [loc[0].longitude ?? 0, loc[0].latitude ?? 0],
+    formattedAddress: loc[0].formattedAddress ?? '',
+    street: loc[0].streetName ?? '',
+    city: loc[0].city ?? '',
+    state: loc[0].stateCode ?? '',
+    zipcode: loc[0].zipcode ?? '',
+    country: loc[0].countryCode ?? '',
+  };
+
+  //Do not save address in DB
+  this.address = undefined;
 });
 
 export const Bootcamp = mongoose.model<IBootcamp>('Bootcamp', BootcampSchema);
