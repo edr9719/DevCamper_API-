@@ -6,6 +6,9 @@ import { config } from './config';
 
 const app: Express = express();
 
+// Express 5 changed the default query parser to 'simple'; restore 'extended' (qs) to support nested bracket notation e.g. ?price[lte]=1000
+app.set('query parser', 'extended');
+
 // –– Global Middleware –– \\
 
 // –– Express parse JSON –– \\
