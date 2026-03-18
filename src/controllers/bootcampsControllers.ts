@@ -11,14 +11,45 @@ export const getBootcamps = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     let query;
 
-    let queryString = JSON.stringify(req.query);
+    //Copy of req.query so req.query stays untouched and only the copy gets modified.
+    const reqQuery = { ...req.query };
+
+    //Fields To Exclude
+    const removeFields = ['select', 'sort'];
+
+    //Loop over removeFields and delete from reqQuery
+    removeFields.forEach((param) => delete reqQuery[param]);
+
+    //Create query string
+    let queryString = JSON.stringify(reqQuery);
+
+    //Create operators ($gt, $gte, etc)
     queryString = queryString.replace(
       /\b(gt|gte|lt|lte|in)\b/g,
       (match) => `$${match}`,
     );
+
+    //Finding Resource
     query = Bootcamp.find(JSON.parse(queryString));
 
+    //Select fields
+    if (req.query.select) {
+      const fields = (req.query.select as string).split(',').join(' ');
+      //Mongoose's .select() tells MongoDB to only return specific fields from the document
+      query = query.select(fields);
+    }
+
+    //Sort
+    if (req.query.sort) {
+      const sortBy = (req.query.sort as string).split(',').join(' ');
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort('-createdAt');
+    }
+
+    //Executing query
     const bootcamps = await query;
+
     res.status(200).json({
       success: true,
       count: bootcamps.length,
