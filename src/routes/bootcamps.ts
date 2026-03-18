@@ -1,4 +1,5 @@
 import express, { Router } from 'express';
+import courses from '../routes/courses';
 import {
   getBootcamps,
   createBootcamp,
@@ -19,5 +20,8 @@ router
   .delete(deleteBootcamp)
   .get(getSingleBootcamp)
   .put(editBootcamp);
+
+//Courses Route
+router.use('/:bootcampId/courses', courses);
 
 export default router;

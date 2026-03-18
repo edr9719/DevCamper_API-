@@ -1,5 +1,6 @@
 import express, { Express } from 'express';
 import bootcamps from './routes/bootcamps';
+import courses from './routes/courses';
 import morgan from 'morgan';
 import { errorHandler } from './middleware/error';
 import { config } from './config';
@@ -21,6 +22,7 @@ if (config.nodeEnv === 'development') {
 
 // –– Mount Routers –– \\
 app.use('/api/v1/bootcamps', bootcamps);
+app.use('/api/v1/courses', courses);
 
 // –– Error handling Middleware –– \\
 //Note: Error handlers are called by Express automatically by looking for any middleware with "4 parameters"
