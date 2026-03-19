@@ -49,4 +49,6 @@ const CourseSchema = new Schema<ICourse>({
   },
 });
 
+CourseSchema.index({ title: 1, bootcamp: 1 }, { unique: true });
+
 export const Course = mongoose.model<ICourse>('Course', CourseSchema);

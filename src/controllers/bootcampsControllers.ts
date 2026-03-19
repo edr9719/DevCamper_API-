@@ -30,7 +30,7 @@ export const getBootcamps = asyncHandler(
     );
 
     //Finding Resource
-    query = Bootcamp.find(JSON.parse(queryString));
+    query = Bootcamp.find(JSON.parse(queryString)).populate('courses');
 
     //Select fields
     if (req.query.select) {
@@ -107,12 +107,17 @@ export const createBootcamp = asyncHandler(
 //@access Private
 export const deleteBootcamp = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id);
+    const bootcamp = await Bootcamp.findById(req.params.id);
+
     if (!bootcamp) {
-      return res
-        .status(400)
-        .json({ success: false, error: 'Bootcamp not found' });
+      return next(
+        new ErrorResponse(
+          `Bootcamp not found with id of ${req.params.bootcampId}`,
+          404,
+        ),
+      );
     }
+    await bootcamp.deleteOne(); // triggers the pre('deleteOne') hook → cascade deletes courses
     res.status(200).json({ success: true, data: {} });
   },
 );
@@ -143,9 +148,12 @@ export const editBootcamp = asyncHandler(
     );
 
     if (!bootcamp) {
-      return res
-        .status(400)
-        .json({ success: false, error: 'Bootcamp not found' });
+      return next(
+        new ErrorResponse(
+          `Bootcamp not found with id of ${req.params.bootcampId}`,
+          404,
+        ),
+      );
     }
     res.status(200).json({
       success: true,
