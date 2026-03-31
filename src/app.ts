@@ -2,8 +2,10 @@ import express, { Express } from 'express';
 import bootcamps from './routes/bootcamps';
 import courses from './routes/courses';
 import morgan from 'morgan';
+import fileupload from 'express-fileupload';
 import { errorHandler } from './middleware/error';
 import { config } from './config';
+import path from 'node:path';
 
 const app: Express = express();
 
@@ -19,6 +21,12 @@ app.use(express.json());
 if (config.nodeEnv === 'development') {
   app.use(morgan('dev'));
 }
+
+//File uploading
+app.use(fileupload());
+
+//Set Static folder
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // –– Mount Routers –– \\
 app.use('/api/v1/bootcamps', bootcamps);

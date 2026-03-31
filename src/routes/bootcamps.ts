@@ -7,6 +7,7 @@ import {
   editBootcamp,
   getSingleBootcamp,
   getBootcampsInRadius,
+  bootcampPhotoUpload,
 } from '../controllers/bootcampsControllers';
 
 const router: Router = express.Router();
@@ -23,5 +24,8 @@ router
 
 //Courses Route
 router.use('/:bootcampId/courses', courses);
+
+//Photo upload
+router.route('/:id/photo').put(bootcampPhotoUpload);
 
 export default router;

@@ -3,6 +3,8 @@ import { Bootcamp } from '../models/Bootcamp.model';
 import { ErrorResponse } from '../utils/errorResponse';
 import { asyncHandler } from '../utils/asyncHandler';
 import { geocoder } from '../utils/geoCoder';
+import { config } from '../config';
+import path from 'node:path';
 
 //@desc Get all bootcamps
 //@route GET /api/v1/bootcamps
@@ -211,5 +213,63 @@ export const getBootcampsInRadius = asyncHandler(
     res
       .status(200)
       .json({ success: true, count: bootcamps.length, data: bootcamps });
+  },
+);
+
+//@desc Upload photo for Bootcamp
+//@route PUT /api/v1/bootcamps/:id/photo
+//@access Private
+export const bootcampPhotoUpload = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const bootcamp = await Bootcamp.findById(req.params.id);
+
+    if (!bootcamp) {
+      return next(
+        new ErrorResponse(
+          `Bootcamp not found with id of ${req.params.bootcampId}`,
+          404,
+        ),
+      );
+    }
+
+    if (!req.files) {
+      return next(new ErrorResponse(`Please upload a file`, 400));
+    }
+
+    const file = Array.isArray(req.files.file)
+      ? req.files.file[0]
+      : req.files.file;
+
+    //Make sure the image is a photo
+    if (!file.mimetype.startsWith('image')) {
+      return next(new ErrorResponse(`Please upload a valid image file`, 400));
+    }
+
+    //Check filesize
+    if (file.size > config.MaxUpload) {
+      return next(
+        new ErrorResponse(
+          `Please upload an image that is less than ${config.MaxUpload}`,
+          400,
+        ),
+      );
+    }
+
+    //Create custom filename
+    file.name = `photo_${bootcamp._id}${path.parse(file.name).ext}`;
+
+    file.mv(`${config.FileUploadPath}/${file.name}`, async (err) => {
+      if (err) {
+        console.log(err);
+        return next(new ErrorResponse(`Problem with file upload`, 500));
+      }
+
+      await Bootcamp.findByIdAndUpdate(req.params.id, { photo: file.name });
+
+      res.status(200).json({
+        success: true,
+        data: file.name,
+      });
+    });
   },
 );
